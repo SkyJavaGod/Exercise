@@ -12,20 +12,10 @@ public class CalculatorOperator{
     private volatile static CalculatorOperator calculatorOper;
 
 
-    //上一步回退步骤
-    private int lastStepIndex = -1;
-
-    //可重做最大步骤
-    private int maxStep= -1;
-
-    private Expression start;
-
-    private int scale;
-
 
     /**
      * 进行累计计算
-     * @param expressions 表达式
+     * @param expression 表达式
      * @return 计算结果
      */
     public void calcTwoNum(Expression expression,int scale) {
