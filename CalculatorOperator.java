@@ -20,17 +20,16 @@ public class CalculatorOperator{
 
     private Expression start;
 
+    private int scale;
+
 
     /**
      * 进行累计计算
      * @param expressions 表达式
      * @return 计算结果
      */
-    public BigDecimal calcTwoNum(List<Expression> expressions,int scale) {
-
-
-        BigDecimal firstNum = expressions.get(expressions.size()-2).getFirstNumber() ;
-        Expression expression = expressions.get(expressions.size() - 1);
+    public void calcTwoNum(Expression expression,int scale) {
+        BigDecimal firstNum = expression.getFirstNumber() ;
         String operator = expression.getOperator() ;
         BigDecimal secondNum = expression.getSecondNumber();
         BigDecimal ret = BigDecimal.ZERO;
@@ -49,59 +48,60 @@ public class CalculatorOperator{
                 ret = firstNum.divide(secondNum, RoundingMode.HALF_UP);
                 break;
         }
-        return ret;
+        expression.setCalValue(ret);
     }
 
 
-    public static CalculatorOperator getInstance(){
-        synchronized (CalculatorOperator.class) {
-            if(calculatorOper == null){
-                calculatorOper = new CalculatorOperator();
+    public Expression calNum(Expression current,int scale,Expression next ){
+        Expression result  = null;
+
+        if(next == null){
+            System.out.println("请选择操作!");
+        }else{
+
+            if (current.getCalValue() == null && next.getFirstNumber() == null) {
+                next.setFirstNumber(BigDecimal.ZERO);
             }
-            return  calculatorOper;
+            current.next = next;
+            next.pre = current;
+            result = next;
+            if(current.getCalValue() !=null){
+                next.setFirstNumber(current.getCalValue());
+            }
+            calcTwoNum(next,scale);
+            System.out.println("计算值-------：" + result);
         }
+        return result;
+
     }
+
 
 
 
     /**
      * 返回上一步操作，返回上一步计算值
      */
-    public void undo(List<Expression> expressions){
+    public Expression undo(Expression expression){
 
         //运算回退
-        if(expressions.isEmpty()){
+        if(expression.pre == null){
             System.out.println("未进行任何操作，不需要返回上一步");
-        }else if(expressions.size() ==1){
-            System.out.println("undo后值:0,"+"undo前值:"+expressions.get(0).getCalValue());
-            start = new Expression();
+            return expression;
         }else{
-            if (lastStepIndex == -1) {
-                lastStepIndex = expressions.size() - 1;
-            } else {
-                if (lastStepIndex - 1 < 0) {
-                    System.out.println("无法再undo!");
-                    return;
-                }
-                lastStepIndex--;
-            }
+            return expression.pre;
         }
     }
 
     /**
      * 恢复撤销操作
      */
-    public void redo(List<Expression> expressions){
-        //运算恢复
-        if(lastStepIndex > -1){
-            if(lastStepIndex +1 == expressions.size() || lastStepIndex + 1 == maxStep){
-                System.out.println("没法再redo");
-                return;
-            }
+    public Expression redo(Expression expression){
+        if(expression.next == null){
+            System.out.println("未进行任何操作，不需要恢复上一步");
+            return expression;
+        }else{
+            return expression.next;
         }
-        lastStepIndex++;
-
-        this.redoPreOperate(calTotals.get(lastStepIndex),calCommands.get(lastStepIndex-1),calNumbers.get(lastStepIndex-1));
     }
 
 

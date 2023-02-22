@@ -2,26 +2,31 @@ import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * 新的计算器类 第二版
+ */
 public class Calculator2 {
 
 
     private static int scale = 2;
 
-    private static CalculatorOperator operator = CalculatorOperator.getInstance();
-
 
     public static void main(String[] args) {
-        List<Expression> expressions = new LinkedList<>();
-
-        Expression start = new Expression("4*8");
-        expressions.add(start);
-        BigDecimal calcTwoNum = operator.calcTwoNum(expressions,scale);
-        start.setCalValue(calcTwoNum);
-        Expression expression = new Expression(calcTwoNum + "-5");
-        expressions.add(expression);
-        calcTwoNum = operator.calcTwoNum(expressions,scale);
-        start.setCalValue(calcTwoNum);
-        System.out.println("-----当前计算式"+ expressions.toString());
+        Expression current = null;
+        CalculatorOperator operator = new CalculatorOperator();
+        Expression start = new Expression();
+        Expression expression = new Expression("4","*" , "8");
+        current= operator.calNum(start, scale,expression);
+        expression = new Expression(null,"+","9");
+        current = operator.calNum(current,scale,expression);
+        current = operator.undo(current);
+        current = operator.undo(current);
+        current = operator.undo(current);
+        current = operator.redo(current);
+        current = operator.redo(current);
+        expression = new Expression(null,"+","200");
+        current = operator.calNum(current,scale,expression);
+        System.out.println("-----当前计算式"+ current.toString());
 
 
     }

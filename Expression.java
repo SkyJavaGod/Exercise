@@ -17,14 +17,18 @@ public class Expression {
     private int scale;
 
 
-    private Expression pre;
+    public Expression pre;
 
 
-    private Expression next;
+    public Expression next;
 
 
     private BigDecimal calValue;
 
+
+    public void setFirstNumber(BigDecimal firstNumber) {
+        this.firstNumber = firstNumber;
+    }
 
     public String getOperator() {
         return operator;
@@ -46,16 +50,11 @@ public class Expression {
         this.calValue = calValue;
     }
 
-    public  Expression(String expression ){
 
-        String mather = "[\\+\\-\\*/]";
-        Pattern pattern = Pattern.compile(mather);
-        Matcher m = pattern.matcher(expression);
-        String[] split = expression.split("[\\+\\-\\*/]");
-        firstNumber = new BigDecimal(split[0]);
-        operator = String.valueOf(m.group(1));
-        secondNumber = new BigDecimal(split[1]);
-
+    public Expression(String firstNumber, String operator,   String secondNumber) {
+        this.operator = operator;
+        this.firstNumber = firstNumber != null ? new BigDecimal(firstNumber) : null;
+        this.secondNumber = new BigDecimal(secondNumber);;
     }
 
     public Expression() {
@@ -64,8 +63,8 @@ public class Expression {
     @Override
     public String toString() {
         return "Expression{" +
-                "operator='" + operator + '\'' +
-                ", firstNumber=" + firstNumber +
+                "firstNumber='" + firstNumber + '\'' +
+                ", operator=" + operator +
                 ", secondNumber=" + secondNumber +
                 ", scale=" + scale +
                 ", calValue=" + calValue +
@@ -73,22 +72,7 @@ public class Expression {
     }
 
     public BigDecimal getCalValue() {
-        BigDecimal ret = BigDecimal.ZERO;
-        switch (operator){
-            case "+":
-                ret = firstNumber.add(secondNumber);
-                break;
-            case "-":
-                ret = firstNumber.subtract(secondNumber).setScale(scale, RoundingMode.HALF_UP);
-                break;
-            case "*":
-                ret = firstNumber.multiply(secondNumber).setScale(scale, RoundingMode.HALF_UP);
-                break;
-            case "/":
-                ret = firstNumber.divide(secondNumber, RoundingMode.HALF_UP);
-                break;
-        }
-        return ret;
+        return this.calValue;
     }
 
 }
